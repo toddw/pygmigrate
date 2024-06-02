@@ -1,4 +1,4 @@
-module github.com/toddw/pymigrate
+module github.com/toddw/pygmigrate
 
 go 1.20
 
