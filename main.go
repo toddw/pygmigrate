@@ -73,8 +73,6 @@ func connectToDatabase() (*sql.DB, error) {
 		psqlInfo += fmt.Sprintf(" password=%s", password)
 	}
 
-	fmt.Println(psqlInfo)
-
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		return nil, err
