@@ -3,19 +3,29 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/lib/pq"
-	"github.com/pelletier/go-toml"
 	"log"
 	"os"
 	"sort"
 	"strconv"
 	"strings"
+
+	_ "github.com/lib/pq"
+	"github.com/pelletier/go-toml"
 )
+
+func loadEnvSettings() (*toml.Tree, error) {
+	tomlTree := toml.Tree{}
+	tomlTree.Set("database.host", os.Getenv("DB_HOST"))
+	tomlTree.Set("database.port", os.Getenv("DB_PORT"))
+	tomlTree.Set("database.user", os.Getenv("DB_USER"))
+	tomlTree.Set("database.dbname", os.Getenv("DB_NAME"))
+	return &tomlTree, nil
+}
 
 func loadSettings() (*toml.Tree, error) {
 	file, err := os.Open("database.toml")
 	if err != nil {
-		return nil, err
+		return loadEnvSettings()
 	}
 	fmt.Println("We loaded the file", file.Name())
 
