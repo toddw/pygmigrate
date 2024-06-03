@@ -66,11 +66,15 @@ func connectToDatabase() (*sql.DB, error) {
 
 	// Prepare database
 	psqlInfo := fmt.Sprintf(
-		"host=%s port=%s user=%s dbname=%s sslmode=disable",
+		"host=%s port=%s user=%s dbname=%s",
 		config.Get("database.host"), port, config.Get("database.user"), config.Get("database.dbname"))
 
 	if password := config.Get("database.password"); password != nil {
 		psqlInfo += fmt.Sprintf(" password=%s", password)
+	}
+
+	if host := config.Get("database.host"); host == "localhost" {
+		psqlInfo += " sslmode=disable"
 	}
 
 	db, err := sql.Open("postgres", psqlInfo)
