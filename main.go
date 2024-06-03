@@ -16,15 +16,12 @@ import (
 func loadEnvSettings() (*toml.Tree, error) {
 	envMap := map[string]interface{}{
 		"database": map[string]interface{}{
-			"host":   os.Getenv("DB_HOST"),
-			"port":   os.Getenv("DB_PORT"),
-			"user":   os.Getenv("DB_USER"),
-			"dbname": os.Getenv("DB_NAME"),
+			"host":     os.Getenv("DB_HOST"),
+			"port":     os.Getenv("DB_PORT"),
+			"user":     os.Getenv("DB_USER"),
+			"dbname":   os.Getenv("DB_NAME"),
+			"password": os.Getenv("DB_PASSWORD"),
 		},
-	}
-
-	if password := os.Getenv("DB_PASSWORD"); password != "" {
-		envMap["database.password"] = password
 	}
 
 	tomlTree, err := toml.TreeFromMap(envMap)
@@ -69,12 +66,12 @@ func connectToDatabase() (*sql.DB, error) {
 		"host=%s port=%s user=%s dbname=%s",
 		config.Get("database.host"), port, config.Get("database.user"), config.Get("database.dbname"))
 
-	if password := config.Get("database.password"); password != nil {
-		psqlInfo += fmt.Sprintf(" password=%s", password)
-	}
-
 	if host := config.Get("database.host"); host == "localhost" {
 		psqlInfo += " sslmode=disable"
+	}
+
+	if password := config.Get("database.password"); password != nil {
+		psqlInfo += fmt.Sprintf(" password=%s", password)
 	}
 
 	db, err := sql.Open("postgres", psqlInfo)
