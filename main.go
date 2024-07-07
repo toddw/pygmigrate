@@ -89,8 +89,12 @@ func connectToDatabase() (*sql.DB, error) {
 
 func createMigrationsTableIfNew(db *sql.DB) error {
 	createVersionTableSQL := `
-		CREATE TABLE IF NOT EXISTS migrations (last_migrated INT);
-		INSERT INTO migrations (last_migrated) VALUES (0);`
+	CREATE TABLE IF NOT EXISTS migrations (last_migrated INT);
+
+	INSERT INTO migrations (last_migrated)
+	SELECT 0
+	WHERE NOT EXISTS (SELECT 1 FROM migrations);
+		`
 	_, err := db.Exec(createVersionTableSQL)
 	if err != nil {
 		return err
