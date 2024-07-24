@@ -131,8 +131,20 @@ func runMigrations(db *sql.DB) {
 
 	var migrationVersion int
 
+	// Sort files numerically based on the number before the first hyphen
 	sort.Slice(files, func(i, j int) bool {
-		return files[i].Name() < files[j].Name()
+		nameI := strings.Split(files[i].Name(), "-")[0]
+		nameJ := strings.Split(files[j].Name(), "-")[0]
+
+		numI, errI := strconv.Atoi(nameI)
+		numJ, errJ := strconv.Atoi(nameJ)
+
+		if errI != nil || errJ != nil {
+			// If there's an error in conversion, fall back to alphabetical sorting
+			return nameI < nameJ
+		}
+
+		return numI < numJ
 	})
 
 	for _, fileInfo := range files {
